@@ -1,5 +1,6 @@
-import { PrismaClient } from "../generated/prisma";
+import { PrismaClient, User } from "../generated/prisma";
 // import { User } from "../generated/prisma";
+
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { userValidator } from "../utils/validate.entries.ts";
@@ -42,7 +43,7 @@ const UserController = {
         }
       }
     } catch (err) {
-      throw err;
+      res.status(500).json({ msg: "server error, try again later" });
     }
   },
   login: async (req: Request, res: Response) => {
@@ -75,11 +76,104 @@ const UserController = {
       res.status(401).json({ msg: `L'utilisateur n'existe pas` });
     }
   },
+
+  updateProfile: async (req: Request, res: Response) => {
+    try {
+      const { email, name }: User = req.body;
+      const { id } = req.params;
+      if (!id) res.status(401).json({ msg: "ID not provided" });
+      const updateUser = await prisma.user.update({
+        where: {
+          id,
+        },
+        data: {
+          name,
+          email,
+        },
+      });
+      console.log(updateUser);
+      res.status(201).json({ msg: "user update successfully" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ msg: "server error, try again later" });
+    }
+  },
   // logout: async (req: Request, res: Response) => {},
-  // profile: async (req: Request, res: Response) => {},
-  // getProfile: async (req: Request, res: Response) => {},
-  // deleteProfile: async (req: Request, res: Response) => {},
-  // updateProfile: async (req: Request, res: Response) => {},
+  profile: async (req: Request, res: Response) => {
+    try {
+      req.ip;
+      const users = await prisma.user.findMany();
+      if (users) {
+        res.status(200).json({
+          msg: "users found successfully",
+          data: users,
+        });
+      } else {
+        res.status(404).json({
+          msg: "no users",
+        });
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ msg: "server error, try again later" });
+    }
+  },
+  deleteProfile: async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params || "";
+      if (id) {
+        const deletedUser = await prisma.user.delete({
+          where: {
+            id,
+          },
+        });
+        if (deletedUser) {
+          res.status(201).json({
+            msg: "user deleted successfully",
+          });
+        } else {
+          res.status(403).json({ msg: "user not found" });
+        }
+      } else {
+        res.status(401).json({
+          msg: "you must provide id ",
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ msg: "server error, try again later" });
+    }
+  },
+  getProfile: async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params || "";
+      if (id) {
+        const users = await prisma.user.findUnique({
+          where: {
+            id,
+          },
+        });
+
+        if (users) {
+          res.status(200).json({
+            msg: "users found successfully",
+            data: users,
+          });
+        } else {
+          res.status(404).json({
+            msg: "no users",
+          });
+        }
+      } else {
+        res.status(401).json({
+          msg: "you must provide id ",
+        });
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ msg: "server error, try again later" });
+    }
+  },
 };
 
 export default UserController;
