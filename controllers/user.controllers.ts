@@ -60,7 +60,7 @@ const UserController = {
     if (user) {
       const compare = await bcrypt.compare(password, user.password);
       if (compare) {
-        const token = await signToken(user.email);
+        const token = await signToken(user.id);
         const refresh_token = await signRefreshToken(user.email);
         console.log(token);
         res.cookie("cookie-wyx", refresh_token);
