@@ -1,7 +1,7 @@
 import { PrismaClient, User } from "../generated/prisma";
-// import { User } from "../generated/prisma";
+import { Request } from "utils/types.ts";
 
-import { Request, Response } from "express";
+import { Response } from "express";
 import bcrypt from "bcrypt";
 import { userValidator } from "../utils/validate.entries.ts";
 import { signToken, signRefreshToken } from "../utils/token-gen.ts";
@@ -80,7 +80,7 @@ const UserController = {
   updateProfile: async (req: Request, res: Response) => {
     try {
       const { email, name }: User = req.body;
-      const { id } = req.params;
+      const id = req.user_id;
       if (!id) res.status(401).json({ msg: "ID not provided" });
       const updateUser = await prisma.user.update({
         where: {
@@ -120,7 +120,7 @@ const UserController = {
   },
   deleteProfile: async (req: Request, res: Response) => {
     try {
-      const { id } = req.params || "";
+      const id = req.user_id;
       if (id) {
         const deletedUser = await prisma.user.delete({
           where: {
@@ -146,7 +146,7 @@ const UserController = {
   },
   getProfile: async (req: Request, res: Response) => {
     try {
-      const { id } = req.params || "";
+      const id = req.user_id;
       if (id) {
         const users = await prisma.user.findUnique({
           where: {

@@ -1,13 +1,9 @@
-import { NextFunction, Request, Response } from "express";
-
+import { NextFunction, Response } from "express";
+import { Request } from "utils/types.ts";
 import { verifyToken } from "../utils/token-gen.ts";
 
-interface RequesUser extends Request {
-  user_id: string;
-}
-
 const validationMiddleware = {
-  validateUser: async (req: RequesUser, res: Response, next: NextFunction) => {
+  validateUser: async (req: Request, res: Response, next: NextFunction) => {
     const authorization = req.headers.authorization?.split(" ")[0];
     console.log(authorization);
     try {

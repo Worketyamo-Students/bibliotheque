@@ -7,7 +7,15 @@ user.post("/signup", UserController.signup);
 user.post("/login", UserController.login);
 // user.post("/logout", () => {});
 user.get("/profile", validationMiddleware.validateUser, UserController.profile);
-user.put("/profile/:id", UserController.updateProfile);
-user.delete("/profile/:id", UserController.deleteProfile);
+user.put(
+  "/profile",
+  validationMiddleware.validateUser,
+  UserController.updateProfile,
+);
+user.delete(
+  "/profile",
+  validationMiddleware.validateUser,
+  UserController.deleteProfile,
+);
 
 export default user;
