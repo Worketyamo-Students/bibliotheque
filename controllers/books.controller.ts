@@ -42,6 +42,7 @@ const Books = {
           description,
           year,
           isbn,
+          loanId: null, // Assuming loanId is optional and can be null
         },
       });
       if (books)

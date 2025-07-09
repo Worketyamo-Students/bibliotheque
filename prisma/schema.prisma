@@ -5,13 +5,13 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-clientapi-bibliotheque-js"
+  provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "mongodb"
-  url      = env("DATABASE_URL")
+  url      = env("db_books")
 }
 
 model User {
@@ -29,6 +29,7 @@ model Books {
   author      String
   description String
   year        String
+  etat        String @default("disponible")
   isbn        String
   Loan        Loan?   @relation(fields: [loanId], references: [id])
   loanId      String? @db.ObjectId
@@ -37,10 +38,9 @@ model Books {
 model Loan {
   id           String         @id @default(auto()) @map("_id") @db.ObjectId
   userId       String         @db.ObjectId
-  loan         String
   back         String
   User         User           @relation(fields: [userId], references: [id])
-  booksId      String?        @db.ObjectId
+  booksId      String        @db.ObjectId
   book         Books[]
   notification Notification[]
 }

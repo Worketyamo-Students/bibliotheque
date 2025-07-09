@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 
-const secret = process.env.JWT_SECRET || "";
-const secretRefresh = process.env.JWT_R_SECRET || "";
+const secret = process.env.JWT_SECRET || "default_secret_key";
+const secretRefresh = process.env.JWT_R_SECRET || "default_refresh_secret_key";
 
 export const signToken = async (payload: string) => {
   const data = jwt.sign({ id: payload }, secret);
